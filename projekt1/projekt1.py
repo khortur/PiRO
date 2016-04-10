@@ -1,14 +1,8 @@
-import numpy as np
-import matplotlib.pyplot as plt
-import sys
-import getopt
 import math
 import glob
 import os
 import skimage
 import skimage.io as io
-import skimage.data as data
-import skimage.color as color
 
 from skimage.measure import label
 from skimage.transform import rotate
@@ -18,7 +12,7 @@ from skimage.transform import resize
 default_width = 300.0
 
 
-def process_one_picture(path):
+def normalize_one_picture(path):
     # read data
     img = io.imread(path, as_grey=True)
 
@@ -48,23 +42,8 @@ def process_one_picture(path):
 
     # mode : {`constant`, `nearest`, `wrap`, `reflect`}
     img3 = resize(img2, resize_output_shape(x, y, img2), mode='nearest')
-    io.imshow(img3)
-    io.show()
 
-    # # Display the image and plot all contours found
-    # fig, ax = plt.subplots()
-    # ax.imshow(img, interpolation='nearest', cmap=plt.cm.gray)
-    #
-    # for n, contour in enumerate(contours):
-    #     ax.plot(contour[:, 1], contour[:, 0], linewidth=2)
-    #
-    # ax.axis('image')
-    # ax.set_xticks([])
-    # ax.set_yticks([])
-    #
-    # # io.imshow(img)
-    # io.show()
-    pass
+    return img3
 
 
 # return the skeleton of rectangle
@@ -141,7 +120,9 @@ def main():
     # process_one_picture('daneA/set0/5.png')
     os.chdir("daneA/set0")
     for file in glob.glob("*.png"):
-        process_one_picture(file)
+        img = normalize_one_picture(file)
+        io.imshow(img)
+        io.show()
 
 if __name__ == "__main__":
     main()
