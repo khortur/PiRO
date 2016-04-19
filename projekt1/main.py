@@ -2,6 +2,9 @@ import sys
 
 from skimage import io
 
+import numpy as np
+
+from describer import Describer
 from normalizer import Normalizer
 
 
@@ -14,8 +17,12 @@ def parse_cmd():
 def parse_images(img_path, img_num):
     for i in range(img_num):
         img = Normalizer.normalize_one_picture(img_path + str(i) + ".png")
+
+        # print(img)
+        desc = Describer(img)
         io.imshow(img)
         print(img_path + str(i) + ".png")
+        print(desc.as_angles())
         io.show()
 
         # images = []
@@ -26,6 +33,7 @@ def parse_images(img_path, img_num):
 
 
 def main():
+    # np.set_printoptions(threshold=np.nan)
     (img_path, img_num) = parse_cmd()
     parse_images(img_path, img_num)
 

@@ -145,9 +145,15 @@ class Normalizer:
 
     @staticmethod
     def angle_from_3_points(x, y, z):
+
+        delta = 0.001
+
         a = math.hypot(x[0]-y[0], x[1]-y[1])
         b = math.hypot(y[0]-z[0], y[1]-z[1])
         c = math.hypot(z[0]-x[0], z[1]-x[1])
+
+        if (abs(a + b - c) < delta) or (abs(a + c - b) < delta) or (abs(b + c - a) < delta):
+            return 180
 
         a2 = math.pow(a, 2)
         b2 = math.pow(b, 2)
