@@ -1,8 +1,5 @@
-import math
 import numpy as np
 from skimage import io
-import skimage.measure as msr
-from skimage.transform import rotate, resize
 
 from normalizer import Normalizer
 

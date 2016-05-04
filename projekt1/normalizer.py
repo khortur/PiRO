@@ -33,21 +33,17 @@ class Normalizer:
 
         # Rotate image
         contours = msr.find_contours(img, 100.0)
-        # print(len(contours))
 
         contours = [max(contours, key=len)]
-        # print(len(contours))
 
         polygon = msr.approximate_polygon(contours[0], approximate_parameter)
 
         # Delete first, doubled, point
         polygon = np.delete(polygon, 0, 0)
-        # print(polygon)
 
         # Delete points in a middle of a straight line
         list_of_points_to_remove = []
         for i in range(len(polygon)):
-            # if i < len(polygon)-1:
             x, y, z = polygon[i-2], polygon[i-1], polygon[i]
             angle = Normalizer.angle_from_3_points(x, y, z)
             xy = math.hypot(x[0]-y[0], x[1]-y[1])
@@ -57,14 +53,10 @@ class Normalizer:
                     list_of_points_to_remove.append(i-1+len(polygon))
                 else:
                     list_of_points_to_remove.append(i-1)
-        # print("list_of_points_to_remove:")
-        # print(list_of_points_to_remove)
-        # print("end")
 
         for i in list_of_points_to_remove:
             polygon = np.delete(polygon, i, 0)
         polygon = np.append(polygon, [polygon[0]], 0)
-        # print(polygon)
 
         # update angle_90_error
         if len(polygon) < 5:
@@ -72,50 +64,9 @@ class Normalizer:
 
         w, x, y, z = Normalizer.find_4_basic_points(polygon)
 
-        # io.imshow(img)
-        # io.show()
-
-        # p = [w.tolist(), x.tolist(), y.tolist(), z.tolist()]
-        # p2 = np.asarray(p)
-
-        # polygons = [p2]
-
-        # polygons.append(p)
-        # print(polygons)
-        # print(polygon)
-
-        # # wyswietlenie polygona
-        # fig, ax = plt.subplots()
-        # ax.imshow(img, interpolation='nearest', cmap=plt.cm.gray)
-        # for n, contour in enumerate(polygons):
-        #     ax.plot(contour[:, 1], contour[:, 0], linewidth=5)
-        #
-        # for n, contour in enumerate([polygon]):
-        #     ax.plot(contour[:, 1], contour[:, 0], 'ro')
-        #
-        # ax.axis('image')
-        # ax.set_xticks([])
-        # ax.set_yticks([])
-        # io.imshow(img)
-        # io.show()
-
-        # ax.plot(contour[:, 1], contour[:, 0], 'ro')
-
-        # print(len(contours))
-        # print(len(polygon))
-        # print(polygon)
-        # print(find_4_basic_points(polygon))
-
-        w, x, y, z = Normalizer.find_4_basic_points(polygon)
-        # print(w, x, y, z)
-        # io.imshow(img)
-        # io.show()
-
         a = Normalizer.rotate_angle(x, y, z)
         img = io.imread(path, as_grey=True)
         img2 = rotate(img, a, resize=True)
-        # io.imshow(img2)
-        # io.show()
 
         # normalize size
         contours2 = msr.find_contours(img2, 0.1)
@@ -174,9 +125,6 @@ class Normalizer:
         # end values
         x, y, z = polygon[len(polygon)-2], polygon[len(polygon)-1], polygon[1]
         list_of_hypotenuses.append([Normalizer.check_if_rectangular_triangle(x, y, z), x, y, z])
-
-        # x, y, z = polygon[len(polygon)-1], polygon[1], polygon[2]
-        # list_of_hypotenuses.append([Normalizer.check_if_rectangular_triangle(x, y, z), x, y, z])
 
         # find 2 maximums
         if len(list_of_hypotenuses) < 2:
@@ -237,7 +185,6 @@ class Normalizer:
     def resize_output_shape(x, y, img):
         width, height = img.shape
 
-        # a = math.hypot(x[0]-y[0], x[1]-y[1])
         a = math.hypot(0.0, x[1]-y[1])
         res = Normalizer.DEFAULT_WIDTH / a
 
