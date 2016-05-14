@@ -91,6 +91,8 @@ class Normalizer:
         for i in range(4):
             result_ordered[i][0], result_ordered[i][1] = result_ordered[i][1], result_ordered[i][0]
 
+        result_ordered[0], result_ordered[2] = result_ordered[2], result_ordered[0]
+
         return result_ordered
 
     @staticmethod
