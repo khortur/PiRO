@@ -30,7 +30,10 @@ def main():
     (img_path, img_rows, img_cols) = parse_cmd()
     (whole_img, parts) = parse_images(img_path, img_rows * img_cols)
     for i in range(len(parts)):
+        scores = []
         for j in range(len(parts)):
+            if i == j:
+                continue
             results = Descriptor(parts[i]).compare(Descriptor(parts[j]))
             min_val = 9999999
             min_key = None
@@ -39,6 +42,10 @@ def main():
                     min_val = results.get(k)
                     min_key = k
             print(i, j, (min_key, min_val))
+            scores.append((j, (min_val)))
+        scores = sorted(scores, key=lambda tup: tup[1])
+        print(i, scores)
+
     # io.imshow(parts[1])
     # io.show()
     # io.imshow(parts[5])
