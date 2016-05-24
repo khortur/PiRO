@@ -61,7 +61,7 @@ def main():
     j = Jigsaw(edges_scores)
 
     sol1, sol_val1 = j.solve(img_cols, img_rows)
-    sol2, sol_val2 = j.solve(img_cols, img_rows)
+    sol2, sol_val2 = j.solve(img_rows, img_cols)
 
     best_solution = sol1
     if sol_val1 < sol_val2:
