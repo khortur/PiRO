@@ -5,7 +5,7 @@ class Jigsaw:
     def __init__(self, edges_scores):
         self.edges_scores = edges_scores
 
-    def solve(self, columns, rows):
+    def solve_for_corner(self, columns, rows, b_c, b_c_r):
         solution = []
 
         for i in range(columns):
@@ -13,7 +13,7 @@ class Jigsaw:
             for j in range(rows):
                 solution[i].append([])
 
-        b_c, b_c_r = self.best_corner()
+        # b_c, b_c_r = self.best_corner()
         solution[0][0] = [b_c, b_c_r]
 
         for i in range(columns):
@@ -56,10 +56,21 @@ class Jigsaw:
 
         return final_solution, value_of_solution
 
-    def best_corner(self):
+    def solve(self, columns, rows):
+        best_sol = None
+        best_val = None
+        for (b_c, b_c_r, v) in self.best_corners(50):
+            sol, val = self.solve_for_corner(columns, rows, b_c, b_c_r)
+            if best_val is None or best_val > val:
+                best_sol = sol
+                best_val = val
+        return best_sol, best_val
+
+    def best_corners(self, amount):
         best_corner = 0
         best_diff = -1.0
         rotate = 0
+        results = []
 
         for i in range(len(self.edges_scores)):
             temp = []
@@ -69,17 +80,22 @@ class Jigsaw:
 
             # diff = temp[3] + temp[2] - temp[1] - temp[0]
             diff = mean([temp[3], temp[2]]) + temp[2] - mean([temp[1], temp[0]]) - temp[1]
-            if best_diff < diff:
-                best_diff = diff
-                best_corner = i
+            # if best_diff < diff:
+            #     best_diff = diff
+            #     best_corner = i
 
-                for j in range(1, 5):
-                    if self.edges_scores[i][j][0][1] == temp[0]:
-                        h = (j - 2) % 4 + 1
-                        if self.edges_scores[i][h][0][1] == temp[1]:
-                            rotate = h
-                        else:
-                            rotate = j
+            for j in range(1, 5):
+                if self.edges_scores[i][j][0][1] == temp[0]:
+                    h = (j - 2) % 4 + 1
+                    if self.edges_scores[i][h][0][1] == temp[1]:
+                        rotate = h
+                    else:
+                        rotate = j
+
+            results.append((i, rotate, diff))
+        results = sorted(results, key=lambda x: x[2])
+        results = results[:min(amount, len(results))]
+        return results
 
         # print(best_corner, rotate, best_diff)
-        return best_corner, rotate
+        # return best_corner, rotate

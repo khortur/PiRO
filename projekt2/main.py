@@ -7,6 +7,13 @@ from skimage.color import rgb2grey, rgb2hsv
 from descriptor import Descriptor
 from jigsaw import Jigsaw
 
+DEBUG_ENABLED = True
+
+
+def print_debug(*args):
+    if DEBUG_ENABLED:
+        print(args)
+
 
 def parse_cmd():
     img_path = sys.argv[1] + "\\"
@@ -49,14 +56,14 @@ def main():
                 if results.get(k) < min_val:
                     min_val = results.get(k)
                     min_key = k
-            print(i, j, (min_key, min_val))
-            scores.append((j, (min_val)))
+            print_debug(i, j, (min_key, min_val))
+            scores.append((j, min_val))
         scores = sorted(scores, key=lambda tup: tup[1])
-        print(i, scores)
+        print_debug(i, scores)
 
         for j in range(1, 5):
             edges_scores[i][j] = sorted(edges_scores[i][j], key=lambda tup: tup[1])
-            print(edges_scores[i][j])
+            print_debug(edges_scores[i][j])
 
     j = Jigsaw(edges_scores)
 
@@ -69,16 +76,6 @@ def main():
 
     for i in range(len(best_solution)):
         print(best_solution[i])
-
-    # io.imshow(parts[1])
-    # io.show()
-    # io.imshow(parts[5])
-    # io.show()
-    #
-    # desc1 = Descriptor(parts[1])
-    # desc2 = Descriptor(parts[5])
-    # print(Descriptor.compare_two_edges(desc1.edges[2], desc2.edges[0]))
-    # print(Descriptor.compare_two_edges(desc1.edges[2], list(reversed(desc2.edges[0]))))
 
 if __name__ == "__main__":
     main()
