@@ -74,7 +74,7 @@ class Jigsaw:
         best_val = None
         for (b_c, b_c_r, v) in self.best_corners(50):
             sol, val = self.solve_for_corner(columns, rows, b_c, b_c_r)
-            if best_val is None or best_val < val:
+            if best_val is None or best_val > val:
                 best_sol = sol
                 best_val = val
         return best_sol, best_val
