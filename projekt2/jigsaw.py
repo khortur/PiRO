@@ -15,6 +15,7 @@ class Jigsaw:
 
         # b_c, b_c_r = self.best_corner()
         solution[0][0] = [b_c, b_c_r]
+        taken = [b_c]
 
         for i in range(columns):
             for j in range(rows):
@@ -23,18 +24,30 @@ class Jigsaw:
                 if j == 0:
                     upper_element = solution[i-1][0]
                     upper_down_index = upper_element[1] % 4 + 1
-                    current_element = self.edges_scores[upper_element[0]][upper_down_index][0][0][0]
-                    current_upper_index = abs(self.edges_scores[upper_element[0]][upper_down_index][0][0][1])
+
+                    k = 0
+                    while self.edges_scores[upper_element[0]][upper_down_index][k][0][0] in taken:
+                        k += 1
+
+                    current_element = self.edges_scores[upper_element[0]][upper_down_index][k][0][0]
+                    current_upper_index = abs(self.edges_scores[upper_element[0]][upper_down_index][k][0][1])
                     current_right_index = current_upper_index % 4 + 1
                     solution[i][j] = [current_element, current_right_index]
+                    taken.append(current_element)
                 else:
                     left_element = solution[i][j-1]
                     left_right_index = left_element[1]
-                    current_element = self.edges_scores[left_element[0]][left_right_index][0][0][0]
-                    current_left_index = abs(self.edges_scores[left_element[0]][left_right_index][0][0][1])
+
+                    k = 0
+                    while self.edges_scores[left_element[0]][left_right_index][k][0][0] in taken:
+                        k += 1
+
+                    current_element = self.edges_scores[left_element[0]][left_right_index][k][0][0]
+                    current_left_index = abs(self.edges_scores[left_element[0]][left_right_index][k][0][1])
                     current_upper_index = current_left_index % 4 + 1
                     current_right_index = current_upper_index % 4 + 1
                     solution[i][j] = [current_element, current_right_index]
+                    taken.append(current_element)
 
         final_solution = []
 
@@ -61,7 +74,7 @@ class Jigsaw:
         best_val = None
         for (b_c, b_c_r, v) in self.best_corners(50):
             sol, val = self.solve_for_corner(columns, rows, b_c, b_c_r)
-            if best_val is None or best_val > val:
+            if best_val is None or best_val < val:
                 best_sol = sol
                 best_val = val
         return best_sol, best_val
@@ -94,6 +107,7 @@ class Jigsaw:
 
             results.append((i, rotate, diff))
         results = sorted(results, key=lambda x: x[2])
+        results.reverse()
         results = results[:min(amount, len(results))]
         return results
 

@@ -1,4 +1,5 @@
 import sys
+import time
 
 from skimage import io
 from normalizer import Normalizer
@@ -78,4 +79,6 @@ def main():
         print(best_solution[i])
 
 if __name__ == "__main__":
+    t0 = time.clock()
     main()
+    print(time.clock() - t0, "seconds process time")
