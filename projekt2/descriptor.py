@@ -1,3 +1,6 @@
+from skimage.transform import rotate
+
+
 class Descriptor:
     WIDTH_PARTS = 100.0
     HEIGHT_PARTS = 100.0
@@ -5,22 +8,27 @@ class Descriptor:
     EDGE_WIDTH = 1
     MAX_DIFFERENCE = 2
 
-    def __init__(self, img):
+    score_cache = {}
+
+    def __init__(self, img, img_num):
         self.img = img
         self.edges = []
+        self.img_num = img_num
 
-        top_edge = img[Descriptor.DISTANCE_FROM_EDGE, :]
-        bottom_edge = img[img.shape[0] - 1 - Descriptor.DISTANCE_FROM_EDGE, :]
-        left_edge = img[:, Descriptor.DISTANCE_FROM_EDGE]
-        right_edge = img[:, img.shape[1] - 1 - Descriptor.DISTANCE_FROM_EDGE]
+        self.top_edge = img[Descriptor.DISTANCE_FROM_EDGE, :]
+        self.bottom_edge = img[img.shape[0] - 1 - Descriptor.DISTANCE_FROM_EDGE, :]
+        self.left_edge = img[:, Descriptor.DISTANCE_FROM_EDGE]
+        self.right_edge = img[:, img.shape[1] - 1 - Descriptor.DISTANCE_FROM_EDGE]
 
-        bottom_edge = list(reversed(bottom_edge))
-        left_edge = list(reversed(left_edge))
+        self.bottom_edge = list(reversed(self.bottom_edge))
+        self.left_edge = list(reversed(self.left_edge))
 
-        self.edges.append(top_edge)
-        self.edges.append(right_edge)
-        self.edges.append(bottom_edge)
-        self.edges.append(left_edge)
+        self.edges.append(self.top_edge)
+        self.edges.append(self.right_edge)
+        self.edges.append(self.bottom_edge)
+        self.edges.append(self.left_edge)
+
+        self.rotation = 0
 
     def print_sides(self):
         print("TOP: ", self.edges[0])
@@ -28,8 +36,20 @@ class Descriptor:
         print("BOTTOM: ", self.edges[2])
         print("LEFT: ", self.edges[3])
 
+    def get_rotated(self, rotation):
+        rotated_img = rotate(self.img, rotation * 90.0)
+        result = Descriptor(rotated_img, self.img_num)
+        result.rotation = (self.rotation + rotation) % 4
+        return result
+
     @staticmethod
-    def compare_two_edges(edge1, edge2):
+    def compare_two_edges(edge1, edge2, e1_id=(-1, -1), e2_id=(-1, -1)):
+        # print(e1_id, e2_id)
+        if (e1_id, e2_id) in Descriptor.score_cache.keys():
+            return Descriptor.score_cache[(e1_id, e2_id)]
+        if (e2_id, e1_id) in Descriptor.score_cache.keys():
+            return Descriptor.score_cache[(e2_id, e1_id)]
+
         result = 0
         for i in range(min(len(edge1), len(edge2))):
             # result += abs(edge1[i] - edge2[i])
@@ -43,6 +63,9 @@ class Descriptor:
             result += min_val
             # for channel in range(3):
             #     result += abs(edge1[i][channel] - edge2[i][channel])
+
+        Descriptor.score_cache[(e1_id, e2_id)] = result
+
         return result
 
     def compare(self, other):

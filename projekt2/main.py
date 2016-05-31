@@ -8,6 +8,8 @@ from skimage.color import rgb2grey, rgb2hsv
 from descriptor import Descriptor
 from jigsaw import Jigsaw
 
+from projekt2.state import State
+
 DEBUG_ENABLED = True
 
 
@@ -78,7 +80,24 @@ def main():
     for i in range(len(best_solution)):
         print(best_solution[i])
 
+
+def print_result(result):
+    for y in result.assigned:
+        line = ""
+        for piece in y:
+            line += str(piece.img_num) + " "
+        print(line)
+
+
+def main2():
+    (img_path, img_rows, img_cols) = parse_cmd()
+    (whole_img, parts) = parse_images(img_path, img_rows * img_cols)
+    (score, result) = State.solve(parts, img_cols, img_rows)
+    print(score)
+    print_result(result)
+
+
 if __name__ == "__main__":
     t0 = time.clock()
-    main()
+    main2()
     print(time.clock() - t0, "seconds process time")
