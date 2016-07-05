@@ -6,11 +6,13 @@ import matplotlib.pyplot as plt
 
 
 class Shaper:
-    # zwraca 3 listy:
+    # zwraca 4 listy i obrazek powiekszony o obramowanie:
     # 1) polygon - lista z glownymi punktami ksztaltu
     # 2) corners - lista naroznikow
     # 3) edges_description - lista liczb, ktore opisuja kolejne krawedzie:
     #    0 -> nie ma wypustki, 1 -> wypustka wypukla, -1 -> wypustka wklesla
+    # 4) contour - kontur figury
+    # 5) img - obrazek powiekszony o obramowanie
     def give_description(self, path):
         img = io.imread(path)
         shape = img.shape
@@ -49,26 +51,27 @@ class Shaper:
         corners = self.find_4_corners(polygon)
         edges_description = self.describe_edges(corners, polygon)
 
-        #TODO do usuniecia
-        # wyswietlenie polygona
-        fig, ax = plt.subplots()
-        ax.imshow(img2, interpolation='nearest', cmap=plt.cm.gray)
+        # #TODO do usuniecia
+        # print(edges_description)
+        #
+        # # wyswietlenie polygona
+        # fig, ax = plt.subplots()
+        # ax.imshow(img2, interpolation='nearest', cmap=plt.cm.gray)
+        #
+        # for n, contour in enumerate([corners]):
+        #     ax.plot(contour[:, 1], contour[:, 0], linewidth=5)
+        #
+        # for n, contour in enumerate([polygon]):
+        #     ax.plot(contour[:, 1], contour[:, 0], 'ro')
+        #
+        # ax.axis('image')
+        # ax.set_xticks([])
+        # ax.set_yticks([])
+        # io.imshow(img2)
+        # io.show()
+        # #TODO koniec usuniecia
 
-        for n, contour in enumerate([corners]):
-            ax.plot(contour[:, 1], contour[:, 0], linewidth=5)
-
-        for n, contour in enumerate([polygon]):
-            ax.plot(contour[:, 1], contour[:, 0], 'ro')
-
-        ax.axis('image')
-        ax.set_xticks([])
-        ax.set_yticks([])
-        io.imshow(img2)
-        io.show()
-        print(edges_description)
-        #TODO koniec usuniecia
-
-        return polygon, corners, edges_description
+        return polygon, corners, edges_description, contours[0], img2
 
     # robi liste 4 liczb, ktore opisuja kolejne krawedzie:
     # 0 -> nie ma wypustki, 1 -> wypustka wypukla, -1 -> wypustka wklesla
@@ -88,7 +91,7 @@ class Shaper:
 
         edges_description = []
         for i in range(4):
-            if (indices_of_corners[i] + 1) == indices_of_corners[i + 1]:
+            if (indices_of_corners[i] + 3) > indices_of_corners[i + 1]:
                 edges_description.append(0)
             else:
                 a = polygon_long[indices_of_corners[i]]
